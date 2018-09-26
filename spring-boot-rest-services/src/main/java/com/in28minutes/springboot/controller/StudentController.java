@@ -33,7 +33,7 @@ public class StudentController {
 	}
 
 	@PostMapping("/students/{studentId}/courses")
-	public ResponseEntity<Void> registerStudentForCourse(
+	public ResponseEntity<Course> registerStudentForCourse(
 			@PathVariable String studentId, @RequestBody Course newCourse) {
 
 		Course course = studentService.addCourse(studentId, newCourse);
@@ -41,10 +41,12 @@ public class StudentController {
 		if (course == null)
 			return ResponseEntity.noContent().build();
 
+
+
 		URI location = ServletUriComponentsBuilder.fromCurrentRequest().path(
 				"/{id}").buildAndExpand(course.getId()).toUri();
 
-		return ResponseEntity.created(location).build();
+		return ResponseEntity.created(location).body(course);
 	}
 
 	@GetMapping("/students/{studentId}/courses/{courseId}")
