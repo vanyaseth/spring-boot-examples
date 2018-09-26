@@ -1,19 +1,26 @@
 package com.in28minutes.springboot.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import java.util.List;
 
+@JsonInclude( JsonInclude.Include.NON_EMPTY)
 public class Student {
 	private String id;
 	private String name;
 	private String description;
+	private String coach;
 	private List<Course> courses;
 
 	public Student(String id, String name, String description,
-			List<Course> courses) {
+			String coach, List<Course> courses) {
 		super();
 		this.id = id;
 		this.name = name;
 		this.description = description;
+		this.coach = coach;
 		this.courses = courses;
 	}
 
@@ -52,7 +59,17 @@ public class Student {
 	@Override
 	public String toString() {
 		return String.format(
-				"Student [id=%s, name=%s, description=%s, courses=%s]", id,
-				name, description, courses);
+				"Student [id=%s, name=%s, description=%s, coach=%s, courses=%s]", id,
+				name, description,coach, courses);
+	}
+
+	public String getCoach()
+	{
+		return coach;
+	}
+
+	public void setCoach( String coach )
+	{
+		this.coach = coach;
 	}
 }
