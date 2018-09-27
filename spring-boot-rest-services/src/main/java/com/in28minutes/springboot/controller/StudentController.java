@@ -5,6 +5,8 @@ import java.util.List;
 
 import com.in28minutes.springboot.model.Student;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.Resource;
+import org.springframework.hateoas.mvc.ControllerLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,6 +17,9 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.in28minutes.springboot.model.Course;
 import com.in28minutes.springboot.service.StudentService;
+
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 @RestController
 public class StudentController {
@@ -33,7 +38,7 @@ public class StudentController {
 	}
 
 	@PostMapping("/students/{studentId}/courses")
-	public ResponseEntity<Course> registerStudentForCourse(
+	public ResponseEntity registerStudentForCourse(
 			@PathVariable String studentId, @RequestBody Course newCourse) {
 
 		Course course = studentService.addCourse(studentId, newCourse);
@@ -41,12 +46,16 @@ public class StudentController {
 		if (course == null)
 			return ResponseEntity.noContent().build();
 
+		Resource<Course> resource = new Resource<Course>(course);
+
+		ControllerLinkBuilder linkTo = linkTo( methodOn( this.getClass() ).retrieveDetailsForCourse(studentId, course.getId() ) );
+		resource.add( linkTo.withSelfRel(  ) );
 
 
 		URI location = ServletUriComponentsBuilder.fromCurrentRequest().path(
 				"/{id}").buildAndExpand(course.getId()).toUri();
 
-		return ResponseEntity.created(location).body(course);
+		return ResponseEntity.created(location).body(resource);
 	}
 
 	@GetMapping("/students/{studentId}/courses/{courseId}")
