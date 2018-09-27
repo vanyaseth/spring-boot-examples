@@ -27,6 +27,17 @@ public class StudentController {
 	@Autowired
 	private StudentService studentService;
 
+	@GetMapping("/students/{studentId}")
+	public Resource<Student> retrieveStudentById(@PathVariable String studentId){
+		Student student = studentService.retrieveStudent( studentId );
+
+		Resource<Student> resource = new Resource<Student>(student);
+
+		ControllerLinkBuilder linkTo = linkTo( methodOn( this.getClass() ).retrieveStudents( ) );
+		resource.add( linkTo.withRel("all-students") );
+		return resource;
+	}
+
 	@GetMapping("/students")
 	public List<Student> retrieveStudents(){
 		return studentService.retrieveAllStudents();
