@@ -1,9 +1,9 @@
 package com.in28minutes.springboot.controller;
 
-import java.net.URI;
-import java.util.List;
-
+import com.in28minutes.springboot.model.Course;
 import com.in28minutes.springboot.model.Student;
+import com.in28minutes.springboot.service.StudentService;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.mvc.ControllerLinkBuilder;
@@ -15,13 +15,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.in28minutes.springboot.model.Course;
-import com.in28minutes.springboot.service.StudentService;
+import java.net.URI;
+import java.util.List;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 @RestController
+
+@Api(value = "Restful apis")
 public class StudentController {
 
 	@Autowired
