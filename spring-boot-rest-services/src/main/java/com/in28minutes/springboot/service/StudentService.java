@@ -1,55 +1,33 @@
 package com.in28minutes.springboot.service;
 
-import java.math.BigInteger;
-import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import org.springframework.stereotype.Component;
-
 import com.in28minutes.springboot.model.Course;
 import com.in28minutes.springboot.model.Student;
+import com.in28minutes.springboot.repository.StudentsRepositoryImpl;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Component;
+
+import java.math.BigInteger;
+import java.security.SecureRandom;
+import java.util.Collections;
+import java.util.List;
 
 @Component
 public class StudentService {
 
-	private static List<Student> students = new ArrayList<>();
-
-	static {
-		//Initialize Data
-		Course course1 = new Course("Course1", "Spring", "10 Steps", Arrays
-				.asList("Learn Maven", "Import Project", "First Example",
-						"Second Example"));
-		Course course2 = new Course("Course2", "Spring MVC", "10 Examples",
-				Arrays.asList("Learn Maven", "Import Project", "First Example",
-						"Second Example"));
-		Course course3 = new Course("Course3", "Spring Boot", "6K Students",
-				Arrays.asList("Learn Maven", "Learn Spring",
-						"Learn Spring MVC", "First Example", "Second Example"));
-		Course course4 = new Course("Course4", "Maven",
-				"Most popular maven course on internet!", Arrays.asList(
-						"Pom.xml", "Build Life Cycle", "Parent POM",
-						"Importing into Eclipse"));
-
-		Student ranga = new Student("Student1", "Ranga Karanam",
-				"Hiker, Programmer and Architect","Anil", new ArrayList<>(Arrays
-						.asList(course1, course2, course3, course4)));
-
-		Student satish = new Student("Student2", "Satish T",
-				"Hiker, Programmer and Architect",null, new ArrayList<>(Arrays
-						.asList(course1, course2, course3, course4)));
-
-		students.add(ranga);
-		students.add(satish);
-	}
+	@Autowired
+	private StudentsRepositoryImpl repository;
 
 	public List<Student> retrieveAllStudents() {
-		return students;
+		return repository.getStudents();
 	}
 
+
 	public Student retrieveStudent(String studentId) {
-		for (Student student : students) {
+		for (Student student : repository.getStudents()) {
 			if (student.getId().equals(studentId)) {
 				return student;
 			}
@@ -102,5 +80,21 @@ public class StudentService {
 		student.getCourses().add(course);
 
 		return course;
+	}
+
+	public Page<Student> findPaginated(Pageable pageable) {
+		int pageSize = pageable.getPageSize();
+		int currentPage = pageable.getPageNumber();
+		int startItem = currentPage * pageSize;
+		List<Student> students;
+		final List<Student> studentList = repository.getStudents();
+		if (studentList.size() < startItem) {
+			students = Collections.emptyList();
+		} else {
+			int toIndex = Math.min(startItem + pageSize, studentList.size());
+			students = studentList.subList(startItem, toIndex);
+		}
+
+		return new PageImpl<>(students, PageRequest.of(currentPage, pageSize), studentList.size());
 	}
 }
